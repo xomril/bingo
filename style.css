@@ -1,0 +1,49 @@
+* {
+    font-family:'Suez One', serif;
+    font-size:32px;
+    direction:rtl;
+  }
+  #main{
+    width:700px;
+    margin:auto;
+    padding:auto;
+  }
+  #board{
+    border:solid 1px #000;
+    width:700px;
+  }
+  .row div {
+    border:solid 1px #000;
+    width:138px;
+    height:170px;
+    float:left;
+    position: relative;
+    
+  }
+  .innerCell {
+    word-wrap: break-word;
+    text-align:center;
+    font-size:18px;
+    background-color:#f0f0f0;
+    position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 90%;
+      height: 50%;
+      margin: auto;
+  }
+  .m {
+   font-size:40px;
+   text-align:center;
+  }
+  
+  @media print
+  {    
+      .no-print, .no-print *
+      {
+          display: none !important;
+      }
+  }
+  
