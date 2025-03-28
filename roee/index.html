@@ -1,213 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Passover Seder Bingo</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: url('https://images.unsplash.com/photo-1586038506551-4478d1f0ad91?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
-      background-size: cover;
-    }
-    .screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 2rem;
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-    .active {
-      display: flex;
-    }
-    #welcomeScreen h1 {
-      font-size: 2rem;
-      color: #d2691e;
-    }
-    #playerName {
-      padding: 0.5rem;
-      font-size: 1rem;
-      margin: 1rem 0;
-      width: 200px;
-      border: 2px solid #ffa07a;
-      border-radius: 5px;
-    }
-    button {
-      padding: 0.7rem 1.2rem;
-      background: #ffa07a;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #ff7f50;
-    }
-    #bingoBoard {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-gap: 5px;
-      margin-top: 1rem;
-    }
-    .cell {
-      width: 60px;
-      height: 60px;
-      background: #fff0f5;
-      border: 2px solid #d2691e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      padding: 5px;
-      cursor: pointer;
-      user-select: none;
-      border-radius: 8px;
-      transition: background 0.3s, transform 0.2s;
-    }
-    .cell:hover {
-      transform: scale(1.05);
-    }
-    .cell.selected {
-      background: #ffb6c1;
-      text-decoration: line-through;
-      color: #8b0000;
-    }
-    #playerLabel {
-      margin-top: 1rem;
-      font-weight: bold;
-      color: #8b4513;
-    }
-    @media (max-width: 600px) {
-      .cell {
-        width: 50px;
-        height: 50px;
-        font-size: 0.7rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Passover Seder Bingo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #F4D03F 0%, #E67E22 100%);
+            background-attachment: fixed;
+        }
+        .desert-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%' viewBox='0 0 1600 900'%3E%3Cpath fill='%23F4D03F' d='M0 0h1600v900H0z'/%3E%3Cpath fill='%23E67E22' d='M957 617c-151 0-208-44-360-44S371 617 0 617v283h1600V617c-360 0-407-44-643-44z'/%3E%3Cg fill='%23D35400'%3E%3Cpath d='M1036 667c-128-10-172-53-324-53s-196 43-352 43v243h1600v-243c-146 0-200-53-352-53s-196 43-324 53z'/%3E%3C/g%3E%3Cpath fill='%23CA5210' d='M1172 691c-98-8-132-41-248-41s-150 33-270 33v216h1600v-216c-120 0-154-33-270-33s-150 33-248 41z'/%3E%3C/svg%3E") no-repeat center center;
+            background-size: cover;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        .svg-icon {
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+        }
+    </style>
 </head>
-<body>
-  <div id="welcomeScreen" class="screen active">
-    <h1>בואו הבאים! Welcome to Passover Bingo!</h1>
-    <input type="text" id="playerName" placeholder="Enter your name" />
-    <button onclick="startGame()">Start</button>
-  </div>
+<body class="min-h-screen flex items-center justify-center">
+    <div class="desert-background"></div>
+    <div id="root"></div>
 
-  <div id="gameScreen" class="screen">
-    <h2>Passover Seder Bingo</h2>
-    <div id="playerLabel"></div>
-    <div id="bingoBoard"></div>
-  </div>
+    <script type="text/babel">
+        const sederMoments = [
+            "Someone spills wine",
+            "Child asks a random question",
+            "Matza breaks in half",
+            "Afikoman is lost",
+            "Someone sings off-key",
+            "Uncle tells the same story",
+            "Table gets too crowded",
+            "A debate over tradition",
+            "Grandparent falls asleep",
+            "Someone asks when we eat",
+            "Karpas gets double dipped",
+            "Wine gets refilled... again",
+            "Miriam's cup is forgotten",
+            "Seder plate confusion",
+            "Chad Gadya gets intense",
+            "Someone makes a dad joke",
+            "Zoom guest talks too long",
+            "Kiddish cup mix-up",
+            "Child says wrong answer",
+            "Soup is too hot",
+            "Charoset goes missing",
+            "Haggadah in 3 languages",
+            "Family photo time",
+            "Too much horseradish",
+            "Matzah crumbs everywhere"
+        ];
 
-  <script>
-    const sederMoments = [
-      "Someone spills wine",
-      "Child asks a random question",
-      "Matza breaks in half",
-      "Afikoman is lost",
-      "Someone sings off-key",
-      "Uncle tells the same story",
-      "Table gets too crowded",
-      "A debate over tradition",
-      "Grandparent falls asleep",
-      "Someone asks when we eat",
-      "Karpas gets double dipped",
-      "Wine gets refilled... again",
-      "Miriam's cup is forgotten",
-      "Seder plate confusion",
-      "Chad Gadya gets intense",
-      "Someone makes a dad joke",
-      "Zoom guest talks too long",
-      "Kiddish cup mix-up",
-      "Child says wrong answer",
-      "Soup is too hot",
-      "Charoset goes missing",
-      "Haggadah in 3 languages",
-      "Family photo time",
-      "Too much horseradish",
-      "Matzah crumbs everywhere"
-    ];
+        const PassoverSymbols = () => (
+            <div className="fixed top-0 left-0 w-full pointer-events-none">
+                <svg className="svg-icon absolute top-10 left-10 w-24 h-24" viewBox="0 0 100 100">
+                    <path d="M50 10 L20 50 L50 90 L80 50 Z" fill="#8B4513" stroke="#5D3A1A" strokeWidth="3"/>
+                    <text x="50" y="55" textAnchor="middle" fill="white" fontSize="20">🍷</text>
+                </svg>
+                <svg className="svg-icon absolute top-10 right-10 w-24 h-24" viewBox="0 0 100 100">
+                    <path d="M30 30 Q50 10, 70 30 T110 30" fill="none" stroke="#8B4513" strokeWidth="5"/>
+                    <text x="50" y="50" textAnchor="middle" fontSize="30">🕍</text>
+                </svg>
+                <svg className="svg-icon absolute bottom-10 left-10 w-24 h-24" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="#D2691E"/>
+                    <text x="50" y="55" textAnchor="middle" fill="white" fontSize="30">🍃</text>
+                </svg>
+                <svg className="svg-icon absolute bottom-10 right-10 w-24 h-24" viewBox="0 0 100 100">
+                    <path d="M20 80 Q50 20, 80 80 Z" fill="#8B4513"/>
+                    <text x="50" y="50" textAnchor="middle" fontSize="30">🕯️</text>
+                </svg>
+            </div>
+        );
 
-    const boardSize = 5;
-    const bingoBoard = document.getElementById('bingoBoard');
-    const playerLabel = document.getElementById('playerLabel');
+        const PassoverBingo = () => {
+            const [screen, setScreen] = React.useState('welcome');
+            const [playerName, setPlayerName] = React.useState('');
+            const [board, setBoard] = React.useState([]);
 
-    function startGame() {
-      const name = document.getElementById('playerName').value.trim();
-      if (!name) return alert('Please enter your name.');
+            const startGame = () => {
+                if (!playerName.trim()) {
+                    alert('Please enter your name.');
+                    return;
+                }
+                
+                const shuffledMoments = [...sederMoments].sort(() => 0.5 - Math.random());
+                const newBoard = shuffledMoments.slice(0, 25).map(moment => ({
+                    text: moment,
+                    selected: false
+                }));
+                
+                setBoard(newBoard);
+                setScreen('game');
+            };
 
-      document.getElementById('welcomeScreen').classList.remove('active');
-      document.getElementById('gameScreen').classList.add('active');
-      playerLabel.textContent = `Player: ${name}`;
+            const toggleCell = (index) => {
+                const newBoard = [...board];
+                newBoard[index].selected = !newBoard[index].selected;
+                setBoard(newBoard);
+                checkBingo(newBoard);
+            };
 
-      initBoard(name);
-    }
+            const checkBingo = (boardData) => {
+                const gridSize = 5;
+                const grid = Array.from({ length: gridSize }, (_, i) =>
+                    boardData.slice(i * gridSize, (i + 1) * gridSize).map(c => c.selected)
+                );
 
-    function initBoard(playerName) {
-      bingoBoard.innerHTML = '';
-      let boardData = JSON.parse(localStorage.getItem('bingo_' + playerName));
+                let bingo = false;
+                // Check rows and columns
+                for (let i = 0; i < gridSize; i++) {
+                    if (grid[i].every(v => v)) bingo = true;
+                    if (grid.map(r => r[i]).every(v => v)) bingo = true;
+                }
 
-      let items = [...sederMoments];
-      shuffleArray(items);
-      items = items.slice(0, boardSize * boardSize);
+                // Check diagonals
+                if (grid.map((r, i) => r[i]).every(v => v)) bingo = true;
+                if (grid.map((r, i) => r[gridSize - 1 - i]).every(v => v)) bingo = true;
 
-      if (!boardData) {
-        boardData = items.map(item => ({ text: item, selected: false }));
-        localStorage.setItem('bingo_' + playerName, JSON.stringify(boardData));
-      }
+                if (bingo) {
+                    alert('Bingo! עשית בינגו!');
+                }
+            };
 
-      boardData.forEach((cell, index) => {
-        const div = document.createElement('div');
-        div.classList.add('cell');
-        if (cell.selected) div.classList.add('selected');
-        div.textContent = cell.text;
-        div.addEventListener('click', () => toggleCell(index, playerName, div));
-        bingoBoard.appendChild(div);
-      });
-    }
+            return (
+                <div className="relative z-10 w-full max-w-4xl mx-auto p-6 bg-white/90 rounded-2xl shadow-2xl">
+                    <PassoverSymbols />
+                    {screen === 'welcome' && (
+                        <div className="text-center">
+                            <h1 className="text-4xl font-bold text-orange-800 mb-6">
+                                Passover Seder Bingo 🍷🍃
+                            </h1>
+                            <input
+                                type="text"
+                                placeholder="Enter your name"
+                                value={playerName}
+                                onChange={(e) => setPlayerName(e.target.value)}
+                                className="w-full max-w-xs p-3 mb-4 border-2 border-orange-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            />
+                            <button 
+                                onClick={startGame}
+                                className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+                            >
+                                Start Bingo Game
+                            </button>
+                        </div>
+                    )}
+                    {screen === 'game' && (
+                        <div>
+                            <h2 className="text-2xl font-semibold text-center mb-4 text-orange-900">
+                                Passover Seder Bingo: {playerName}
+                            </h2>
+                            <div className="grid grid-cols-5 gap-2">
+                                {board.map((cell, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => toggleCell(index)}
+                                        className={`
+                                            p-3 text-center text-sm border-2 rounded-lg cursor-pointer 
+                                            transition-all duration-300 ease-in-out
+                                            ${cell.selected 
+                                                ? 'bg-orange-200 text-orange-900 line-through' 
+                                                : 'bg-orange-50 hover:bg-orange-100'
+                                            }
+                                        `}
+                                    >
+                                        {cell.text}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
 
-    function toggleCell(index, playerName, element) {
-      let boardData = JSON.parse(localStorage.getItem('bingo_' + playerName));
-      boardData[index].selected = !boardData[index].selected;
-      element.classList.toggle('selected');
-      localStorage.setItem('bingo_' + playerName, JSON.stringify(boardData));
-      checkBingo(boardData);
-    }
-
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-
-    function checkBingo(boardData) {
-      const grid = Array.from({ length: boardSize }, (_, i) =>
-        boardData.slice(i * boardSize, (i + 1) * boardSize).map(c => c.selected)
-      );
-
-      let bingo = false;
-
-      for (let i = 0; i < boardSize; i++) {
-        if (grid[i].every(v => v)) bingo = true;
-        if (grid.map(r => r[i]).every(v => v)) bingo = true;
-      }
-
-      if (grid.map((r, i) => r[i]).every(v => v)) bingo = true;
-      if (grid.map((r, i) => r[boardSize - 1 - i]).every(v => v)) bingo = true;
-
-      if (bingo) alert('Bingo! עשית בינגו!');
-    }
-  </script>
+        ReactDOM.render(<PassoverBingo />, document.getElementById('root'));
+    </script>
 </body>
 </html>
