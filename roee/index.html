@@ -1,11 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Passover Seder Bingo</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: url('https://images.unsplash.com/photo-1586038506551-4478d1f0ad91?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+    }
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .active {
+      display: flex;
+    }
+    #welcomeScreen h1 {
+      font-size: 2rem;
+      color: #d2691e;
+    }
+    #playerName {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin: 1rem 0;
+      width: 200px;
+      border: 2px solid #ffa07a;
+      border-radius: 5px;
+    }
+    button {
+      padding: 0.7rem 1.2rem;
+      background: #ffa07a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff7f50;
+    }
+    #bingoBoard {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 5px;
+      margin-top: 1rem;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      background: #fff0f5;
+      border: 2px solid #d2691e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      padding: 5px;
+      cursor: pointer;
+      user-select: none;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .cell:hover {
+      transform: scale(1.05);
+    }
+    .cell.selected {
+      background: #ffb6c1;
+      text-decoration: line-through;
+      color: #8b0000;
+    }
+    #playerLabel {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #8b4513;
+    }
+    @media (max-width: 600px) {
+      .cell {
+        width: 50px;
+        height: 50px;
+        font-size: 0.7rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    hello world
+  <div id="welcomeScreen" class="screen active">
+    <h1>בואו הבאים! Welcome to Passover Bingo!</h1>
+    <input type="text" id="playerName" placeholder="Enter your name" />
+    <button onclick="startGame()">Start</button>
+  </div>
+
+  <div id="gameScreen" class="screen">
+    <h2>Passover Seder Bingo</h2>
+    <div id="playerLabel"></div>
+    <div id="bingoBoard"></div>
+  </div>
+
+  <script>
+    const sederMoments = [
+      "Someone spills wine",
+      "Child asks a random question",
+      "Matza breaks in half",
+      "Afikoman is lost",
+      "Someone sings off-key",
+      "Uncle tells the same story",
+      "Table gets too crowded",
+      "A debate over tradition",
+      "Grandparent falls asleep",
+      "Someone asks when we eat",
+      "Karpas gets double dipped",
+      "Wine gets refilled... again",
+      "Miriam's cup is forgotten",
+      "Seder plate confusion",
+      "Chad Gadya gets intense",
+      "Someone makes a dad joke",
+      "Zoom guest talks too long",
+      "Kiddish cup mix-up",
+      "Child says wrong answer",
+      "Soup is too hot",
+      "Charoset goes missing",
+      "Haggadah in 3 languages",
+      "Family photo time",
+      "Too much horseradish",
+      "Matzah crumbs everywhere"
+    ];
+
+    const boardSize = 5;
+    const bingoBoard = document.getElementById('bingoBoard');
+    const playerLabel = document.getElementById('playerLabel');
+
+    function startGame() {
+      const name = document.getElementById('playerName').value.trim();
+      if (!name) return alert('Please enter your name.');
+
+      document.getElementById('welcomeScreen').classList.remove('active');
+      document.getElementById('gameScreen').classList.add('active');
+      playerLabel.textContent = `Player: ${name}`;
+
+      initBoard(name);
+    }
+
+    function initBoard(playerName) {
+      bingoBoard.innerHTML = '';
+      let boardData = JSON.parse(localStorage.getItem('bingo_' + playerName));
+
+      let items = [...sederMoments];
+      shuffleArray(items);
+      items = items.slice(0, boardSize * boardSize);
+
+      if (!boardData) {
+        boardData = items.map(item => ({ text: item, selected: false }));
+        localStorage.setItem('bingo_' + playerName, JSON.stringify(boardData));
+      }
+
+      boardData.forEach((cell, index) => {
+        const div = document.createElement('div');
+        div.classList.add('cell');
+        if (cell.selected) div.classList.add('selected');
+        div.textContent = cell.text;
+        div.addEventListener('click', () => toggleCell(index, playerName, div));
+        bingoBoard.appendChild(div);
+      });
+    }
+
+    function toggleCell(index, playerName, element) {
+      let boardData = JSON.parse(localStorage.getItem('bingo_' + playerName));
+      boardData[index].selected = !boardData[index].selected;
+      element.classList.toggle('selected');
+      localStorage.setItem('bingo_' + playerName, JSON.stringify(boardData));
+      checkBingo(boardData);
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function checkBingo(boardData) {
+      const grid = Array.from({ length: boardSize }, (_, i) =>
+        boardData.slice(i * boardSize, (i + 1) * boardSize).map(c => c.selected)
+      );
+
+      let bingo = false;
+
+      for (let i = 0; i < boardSize; i++) {
+        if (grid[i].every(v => v)) bingo = true;
+        if (grid.map(r => r[i]).every(v => v)) bingo = true;
+      }
+
+      if (grid.map((r, i) => r[i]).every(v => v)) bingo = true;
+      if (grid.map((r, i) => r[boardSize - 1 - i]).every(v => v)) bingo = true;
+
+      if (bingo) alert('Bingo! עשית בינגו!');
+    }
+  </script>
 </body>
 </html>
