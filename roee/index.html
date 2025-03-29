@@ -10,12 +10,15 @@
             text-align: center;
             margin: 0;
             padding: 0;
-            background-color: #fceabb;
+            background: url('https://example.com/desert-background.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
         .container {
             max-width: 600px;
             margin: auto;
             padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
         }
         .hidden { display: none; }
         .bingo-board {
@@ -43,6 +46,10 @@
             border: none;
             cursor: pointer;
         }
+        #timer {
+            font-size: 18px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -55,6 +62,7 @@
 
     <div class="container hidden" id="bingo-screen">
         <h2 id="player-greeting"></h2>
+        <div id="timer">Time: 0s</div>
         <div class="bingo-board" id="bingo-board"></div>
         <button onclick="resetGame()">Reset Game</button>
     </div>
@@ -69,6 +77,8 @@
             "Someone brings non-Kosher snack", "Pesach song remix", "Grandma’s recipe debate", "Late guest arrives",
             "Someone claims this is ‘the best Seder ever’"
         ];
+        let timer;
+        let seconds = 0;
 
         function startGame() {
             const name = document.getElementById('player-name').value;
@@ -77,6 +87,16 @@
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('bingo-screen').classList.remove('hidden');
             setupBoard();
+            startTimer();
+        }
+
+        function startTimer() {
+            seconds = 0;
+            document.getElementById('timer').innerText = `Time: ${seconds}s`;
+            timer = setInterval(() => {
+                seconds++;
+                document.getElementById('timer').innerText = `Time: ${seconds}s`;
+            }, 1000);
         }
 
         function setupBoard() {
@@ -99,11 +119,29 @@
             let savedBoard = JSON.parse(localStorage.getItem('bingoBoard')) || {};
             savedBoard[index] = cell.classList.contains('selected');
             localStorage.setItem('bingoBoard', JSON.stringify(savedBoard));
+            checkBingo();
+        }
+
+        function checkBingo() {
+            const board = [...document.querySelectorAll('.bingo-cell')];
+            let grid = board.map(cell => cell.classList.contains('selected'));
+            let winPatterns = [
+                [0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14], [15,16,17,18,19], [20,21,22,23,24], // Rows
+                [0,5,10,15,20], [1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,14,19,24], // Columns
+                [0,6,12,18,24], [4,8,12,16,20] // Diagonals
+            ];
+            
+            if (winPatterns.some(pattern => pattern.every(index => grid[index]))) {
+                clearInterval(timer);
+                alert(`Bingo! You won in ${seconds} seconds!`);
+            }
         }
 
         function resetGame() {
             localStorage.removeItem('bingoBoard');
+            clearInterval(timer);
             setupBoard();
+            startTimer();
         }
     </script>
 </body>
