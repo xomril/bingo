@@ -133,7 +133,10 @@
             
             if (winPatterns.some(pattern => pattern.every(index => grid[index]))) {
                 clearInterval(timer);
-                alert(`Bingo! You won in ${seconds} seconds!`);
+                const reset = confirm(`Bingo! You won in ${seconds} seconds! Do you want to reset the game?`);
+                if (reset) {
+                    resetGame();
+                }
             }
         }
 
