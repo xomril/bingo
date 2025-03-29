@@ -13,6 +13,7 @@
             background-image: url('https://raw.githubusercontent.com/xomril/bingo/master/roee/desert%20background%20(1).png');
             background-size: cover;
         }
+
         .container {
             max-width: 600px;
             margin: auto;
@@ -20,13 +21,18 @@
             background: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
         }
-        .hidden { display: none; }
+
+        .hidden {
+            display: none;
+        }
+
         .bingo-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 5px;
             margin-top: 20px;
         }
+
         .bingo-cell {
             padding: 15px;
             border: 2px solid #8b4513;
@@ -34,10 +40,12 @@
             cursor: pointer;
             font-size: 14px;
         }
+
         .bingo-cell.selected {
             background-color: #d4a373;
             color: white;
         }
+
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -46,9 +54,46 @@
             border: none;
             cursor: pointer;
         }
+
         #timer {
             font-size: 18px;
             margin-top: 10px;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(200px, 100px);
+            }
+            50% {
+                transform: translate(-200px, 200px);
+            }
+            75% {
+                transform: translate(150px, -150px);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        .floating-object {
+            position: absolute;
+            animation: float 10s infinite ease-in-out;
+            opacity: 0.8;
+            z-index: 1; /* Floating objects are behind the game board */
+            cursor: pointer;
+            user-select: none; /* Prevent text selection while dragging */
+        }
+
+        .floating-object img {
+            width: 50px; /* Adjust size of the image */
+            height: auto;
+        }
+
+        #bingo-board {
+            z-index: 10; /* Ensure the game board is in front of floating objects */
         }
     </style>
 </head>
@@ -136,7 +181,7 @@
                 [0,5,10,15,20], [1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,14,19,24], // Columns
                 [0,6,12,18,24], [4,8,12,16,20] // Diagonals
             ];
-            
+
             if (winPatterns.some(pattern => pattern.every(index => grid[index]))) {
                 clearInterval(timer);
                 const reset = confirm(`Bingo! You won in ${seconds} seconds! Do you want to reset the game?`);
@@ -152,6 +197,63 @@
             setupBoard();
             startTimer();
         }
+
+        let draggedElement = null;
+
+        function createFloatingObject(src) {
+            const obj = document.createElement('div');
+            obj.classList.add('floating-object');
+            const img = document.createElement('img');
+            img.src = src;
+            obj.appendChild(img);
+
+            // Randomize initial position
+            obj.style.top = `${Math.random() * 100}%`;
+            obj.style.left = `${Math.random() * 100}%`;
+
+            // Enable dragging
+            obj.onmousedown = (event) => {
+                draggedElement = obj;
+                const shiftX = event.clientX - obj.getBoundingClientRect().left;
+                const shiftY = event.clientY - obj.getBoundingClientRect().top;
+
+                // Move the object following the mouse
+                function moveAt(pageX, pageY) {
+                    draggedElement.style.left = pageX - shiftX + 'px';
+                    draggedElement.style.top = pageY - shiftY + 'px';
+                }
+
+                // Move the object when mouse is moved
+                document.onmousemove = (event) => {
+                    moveAt(event.pageX, event.pageY);
+                };
+
+                // Drop the object when mouse button is released
+                obj.onmouseup = () => {
+                    document.onmousemove = null;
+                    obj.onmouseup = null;
+                };
+            };
+
+            obj.ondragstart = () => {
+                return false; // Disable default drag behavior
+            };
+
+            // Append to the body or container
+            document.body.appendChild(obj);
+
+            // Optional: Remove object after animation to keep it clean
+            setTimeout(() => {
+                obj.remove();
+            }, 10000); // Match the animation duration
+        }
+
+        // Example usage
+        createFloatingObject('https://images.vexels.com/content/285942/preview/matzo-wine-ethnic-character-481651.png');
+        createFloatingObject('https://images.vexels.com/media/users/3/357032/isolated/preview/4f2663db58bd4556e22733fc16e0f52e-pink-wine-glass-design.png');
+        createFloatingObject('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_of_David.svg/1200px-Star_of_David.svg.png');
+        createFloatingObject('https://images.vexels.com/media/users/3/139837/isolated/preview/1a2543724ef97e747f8d7b5ea96ac46f-camel-cartoon.png?w=360');
+        // Add more calls as needed
     </script>
 </body>
 </html>
