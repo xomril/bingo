@@ -12,10 +12,17 @@
             padding: 0;
             background-image: url('https://raw.githubusercontent.com/xomril/bingo/master/roee/desert%20background%20(1).png');
             background-size: cover;
+            background-position: center center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
             max-width: 600px;
+            width: 100%;
             margin: auto;
             padding: 20px;
             background: rgba(255, 255, 255, 0.8);
@@ -31,6 +38,7 @@
             grid-template-columns: repeat(5, 1fr);
             gap: 5px;
             margin-top: 20px;
+            max-width: 100%;
         }
 
         .bingo-cell {
@@ -82,18 +90,18 @@
             position: absolute;
             animation: float 10s infinite ease-in-out;
             opacity: 0.8;
-            z-index: 1; /* Floating objects are behind the game board */
+            z-index: 1;
             cursor: pointer;
-            user-select: none; /* Prevent text selection while dragging */
+            user-select: none;
         }
 
         .floating-object img {
-            width: 50px; /* Adjust size of the image */
+            width: 50px;
             height: auto;
         }
 
         #bingo-board {
-            z-index: 10; /* Ensure the game board is in front of floating objects */
+            z-index: 10;
         }
     </style>
 </head>
@@ -148,7 +156,7 @@
             const board = document.getElementById('bingo-board');
             board.innerHTML = '';
             let shuffledItems = bingoItems.sort(() => Math.random() - 0.5).slice(0, 24);
-            shuffledItems.splice(12, 0, "Passover"); // Insert "Passover" into the middle
+            shuffledItems.splice(12, 0, "Passover");
 
             let savedBoard = JSON.parse(localStorage.getItem('bingoBoard')) || {};
             shuffledItems.forEach((item, index) => {
@@ -157,7 +165,7 @@
                 cell.textContent = item;
                 if (savedBoard[index]) cell.classList.add('selected');
                 if (index === 12) {
-                    cell.classList.add('free-space'); // Special class for the center cell
+                    cell.classList.add('free-space'); 
                 }
                 cell.onclick = () => toggleCell(cell, index);
                 board.appendChild(cell);
@@ -165,7 +173,7 @@
         }
 
         function toggleCell(cell, index) {
-            if (index === 12) return; // Don't toggle the center free space
+            if (index === 12) return; 
             cell.classList.toggle('selected');
             let savedBoard = JSON.parse(localStorage.getItem('bingoBoard')) || {};
             savedBoard[index] = cell.classList.contains('selected');
@@ -175,11 +183,11 @@
 
         function checkBingo() {
             const board = [...document.querySelectorAll('.bingo-cell')];
-            let grid = board.map((cell, index) => index === 12 || cell.classList.contains('selected')); // Treat center as selected
+            let grid = board.map((cell, index) => index === 12 || cell.classList.contains('selected'));
             let winPatterns = [
-                [0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14], [15,16,17,18,19], [20,21,22,23,24], // Rows
-                [0,5,10,15,20], [1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,14,19,24], // Columns
-                [0,6,12,18,24], [4,8,12,16,20] // Diagonals
+                [0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14], [15,16,17,18,19], [20,21,22,23,24],
+                [0,5,10,15,20], [1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,14,19,24],
+                [0,6,12,18,24], [4,8,12,16,20] 
             ];
 
             if (winPatterns.some(pattern => pattern.every(index => grid[index]))) {
@@ -198,8 +206,6 @@
             startTimer();
         }
 
-        let draggedElement = null;
-
         function createFloatingObject(src) {
             const obj = document.createElement('div');
             obj.classList.add('floating-object');
@@ -207,57 +213,22 @@
             img.src = src;
             obj.appendChild(img);
 
-            // Randomize initial position
-            obj.style.top = `${Math.random() * 100}%`;
-            obj.style.left = `${Math.random() * 100}%`;
-
-            // Enable dragging
-            obj.onmousedown = (event) => {
-                draggedElement = obj;
-                const shiftX = event.clientX - obj.getBoundingClientRect().left;
-                const shiftY = event.clientY - obj.getBoundingClientRect().top;
-
-                // Move the object following the mouse
-                function moveAt(pageX, pageY) {
-                    draggedElement.style.left = pageX - shiftX + 'px';
-                    draggedElement.style.top = pageY - shiftY + 'px';
-                }
-
-                // Move the object when mouse is moved
-                document.onmousemove = (event) => {
-                    moveAt(event.pageX, event.pageY);
-                };
-
-                // Drop the object when mouse button is released
-                obj.onmouseup = () => {
-                    document.onmousemove = null;
-                    obj.onmouseup = null;
-                };
+            const moveObject = () => {
+                let x = Math.random() * window.innerWidth;
+                let y = Math.random() * window.innerHeight;
+                obj.style.left = `${x}px`;
+                obj.style.top = `${y}px`;
             };
 
-            obj.ondragstart = () => {
-                return false; // Disable default drag behavior
-            };
+            setInterval(moveObject, 2000);  // Move object every 2 seconds
 
-            // Append to the body or container
             document.body.appendChild(obj);
-
-            // Optional: Remove object after animation to keep it clean
-            setTimeout(() => {
-                obj.remove();
-            }, 10000); // Match the animation duration
         }
 
-        // Example usage
         createFloatingObject('https://images.vexels.com/content/285942/preview/matzo-wine-ethnic-character-481651.png');
         createFloatingObject('https://images.vexels.com/media/users/3/357032/isolated/preview/4f2663db58bd4556e22733fc16e0f52e-pink-wine-glass-design.png');
         createFloatingObject('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_of_David.svg/1200px-Star_of_David.svg.png');
         createFloatingObject('https://images.vexels.com/media/users/3/139837/isolated/preview/1a2543724ef97e747f8d7b5ea96ac46f-camel-cartoon.png?w=360');
-        createFloatingObject('https://images.vexels.com/content/285942/preview/matzo-wine-ethnic-character-481651.png');
-        createFloatingObject('https://images.vexels.com/media/users/3/357032/isolated/preview/4f2663db58bd4556e22733fc16e0f52e-pink-wine-glass-design.png');
-        createFloatingObject('https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Star_of_David.svg/1200px-Star_of_David.svg.png');
-        createFloatingObject('https://images.vexels.com/media/users/3/139837/isolated/preview/1a2543724ef97e747f8d7b5ea96ac46f-camel-cartoon.png?w=360');
-        // Add more calls as needed
     </script>
 </body>
 </html>
