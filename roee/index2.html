@@ -191,7 +191,7 @@
         <h2 id="player-greeting"></h2>
         <div id="timer">Time: 0s</div>
         <div class="bingo-board" id="bingo-board"></div>
-        <button onclick="resetGame()">Reset Game</button>
+        <button onclick="resetGame()">אפס משחק</button>
     </div>
 
     <div id="bingo-alert">
@@ -215,7 +215,7 @@
         function startGame() {
             const name = document.getElementById('player-name').value;
             if (!name) return alert("Please enter your name");
-            document.getElementById('player-greeting').innerText = `Welcome, ${name}!`;
+            document.getElementById('player-greeting').innerText = `שלום, ${name}!`;
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('bingo-screen').classList.remove('hidden');
             setupBoard();
@@ -225,10 +225,10 @@
 
         function startTimer() {
             seconds = 0;
-            document.getElementById('timer').innerText = `Time: ${seconds}s`;
+            document.getElementById('timer').innerText = `זמן: ${seconds}s`;
             timer = setInterval(() => {
                 seconds++;
-                document.getElementById('timer').innerText = `Time: ${seconds}s`;
+                document.getElementById('timer').innerText = `זמן: ${seconds}s`;
             }, 1000);
         }
 
