@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -121,22 +121,97 @@
     </div>
 
     <script>
-        const bingoItems = [
-            "Someone spills wine", "Child asks a random question", "Someone sings off-key", "Matzah crumbs everywhere",
-            "Elijah's cup remains full", "Debate over when to eat", "Afikoman negotiations", "Wine stain on tablecloth",
-            "Haggadah confusion", "Overly enthusiastic Dayenu", "Pesach pun is made", "Grandparent falls asleep",
-            "Long-winded explanation", "Seder plate disaster", "Someone sings the wrong verse", "Rushed through Maggid",
-            "Someone forgets a step", "Passover joke is told", "Who’s reading next?", "Karpas is everyone's favorite",
-            "Someone brings non-Kosher snack", "Pesach song remix", "Grandma’s recipe debate", "Late guest arrives",
-            "Someone claims this is ‘the best Seder ever’"
+         const bingoItems = [
+            "קדש",  
+            "רחץ",  
+            "כרפס",  
+            "יחץ",  
+            "מגיד",  
+            "עבדים היינו",  
+            "עשר המכות",  
+            "דם",  
+            "צפרדע",  
+            "כינים",  
+            "ערוב",  
+            "דבר",  
+            "שחין",  
+            "ברד",  
+            "ארבה",  
+            "חושך",  
+            "מכת בכורות",  
+            "דיינו",  
+            "ויכוח על סלט מיונז או תפוח אדמה",  
+            "רחצה",  
+            "מוציא מצה",  
+            "מרור",  
+            "כורך",  
+            "אוכלים חרוסת",  
+            "חרוסת",  
+            "חזרת",  
+            "שולחן עורך",  
+            "בעבע תמר",  
+            "עוגת שוקולד וסוכריות",  
+            "משה בתיבה",  
+            "צפון",  
+            "אפיקומן",  
+            "ברך",  
+            "כוס ראשונה",  
+            "נשפכת כוס יין ראשונה",  
+            "כוס שניה",  
+            "כוס שלישית",  
+            "כוס רביעית",  
+            "נשפכת כוס מיץ ראשונה",  
+            "נשברת כוס",  
+            "הלל",  
+            "נרצה",  
+            "אליהו דופק בדלת",  
+            "והיא שעמדה",  
+            "חד גדיא",  
+            "אחד מי יודע",  
+            "שני לוחות הברית",  
+            "שישה סדרי משנה",  
+            "ארבע אמהות",  
+            "40 שנה",  
+            "יציאת מצרים",  
+            "קריעת ים סוף",  
+            "בוטש",  
+            "שוק",  
+            "שונרא",  
+            "תם",  
+            "רשע",  
+            "שאינו יודע לשאול",  
+            "חכם",  
+            "ג'ינג'י ובלונדי",  
+            "ג'וי",  
+            "ארליך וקים",  
+            "אלענה",  
+            "דיניש",  
+            "5",  
+            "3",  
+            "21",  
+            "אדום",  
+            "לעשות עם השן",  
+            "ליקוק",  
+            "דוריטוס",  
+            "מגדל בפתח תקווה",  
+            "ביצה",  
+            "חמץ",  
+            "ערוב",  
+            "שש בש",  
+            "זרוע",  
+            "מצות"
+
+             
+             
+
         ];
         let timer;
         let seconds = 0;
 
         function startGame() {
             const name = document.getElementById('player-name').value;
-            if (!name) return alert("Please enter your name");
-            document.getElementById('player-greeting').innerText = `Welcome, ${name}!`;
+            if (!name) return alert("הכנס שם:");
+            document.getElementById('player-greeting').innerText = `חג שמח, ${name}!`;
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('bingo-screen').classList.remove('hidden');
             setupBoard();
@@ -145,10 +220,10 @@
 
         function startTimer() {
             seconds = 0;
-            document.getElementById('timer').innerText = `Time: ${seconds}s`;
+            document.getElementById('timer').innerText = `זמן: ${seconds}`;
             timer = setInterval(() => {
                 seconds++;
-                document.getElementById('timer').innerText = `Time: ${seconds}s`;
+                document.getElementById('timer').innerText = `זמן: ${seconds}`;
             }, 1000);
         }
 
@@ -156,7 +231,7 @@
             const board = document.getElementById('bingo-board');
             board.innerHTML = '';
             let shuffledItems = bingoItems.sort(() => Math.random() - 0.5).slice(0, 24);
-            shuffledItems.splice(12, 0, "Passover");
+            shuffledItems.splice(12, 0, "פסח!");
 
             let savedBoard = JSON.parse(localStorage.getItem('bingoBoard')) || {};
             shuffledItems.forEach((item, index) => {
@@ -192,7 +267,7 @@
 
             if (winPatterns.some(pattern => pattern.every(index => grid[index]))) {
                 clearInterval(timer);
-                const reset = confirm(`Bingo! You won in ${seconds} seconds! Do you want to reset the game?`);
+                const reset = confirm(`בינגו! ניצחת תוך ${seconds} שניות! תרצה לשחק שוב?`);
                 if (reset) {
                     resetGame();
                 }
